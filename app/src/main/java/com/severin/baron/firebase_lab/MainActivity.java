@@ -1,14 +1,19 @@
 package com.severin.baron.firebase_lab;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.severin.baron.firebase_lab.Model.Message;
 
@@ -43,41 +48,34 @@ public class MainActivity extends AppCompatActivity {
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
 
 
+        SignInButton signInButton = (SignInButton) findViewById(R.id.signInButton_MainActivity);
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signIn();
+            }
+        });
 
-        // TODO: test code below
-//        Message first, second, third;
-//        try {
-//            first = new Message("first", "");
-//            Thread.sleep(1000);
-//            second = new Message("second", "");
-//            Thread.sleep(1000);
-//            third = new Message("third", "");
-//            Thread.sleep(1000);
-//
-//
-//        ArrayList<Message> arrayList = new ArrayList<>();
-//        arrayList.add(second);
-//        arrayList.add(third);
-//        arrayList.add(first);
-//
-//        for (Message message : arrayList) {
-//            Log.d("SEVTEST1 ", message.toString() + " " + message.getTimeStamp());
-//        }
-//
-//        Collections.sort(arrayList);
-//
-//        for (Message message : arrayList) {
-//            Log.d("SEVTEST2 ", message.toString() + " " + message.getTimeStamp());
-//        }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        // TODO: TEMP
+        Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                printStuff();
+            }
+        });
 
 
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        mEmail = sharedPreferences.getString(PH.USER_EMAIL, null);
+        mFullName = sharedPreferences.getString(PH.USER_NAME, null);
     }
 
     @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -92,21 +90,34 @@ public class MainActivity extends AppCompatActivity {
                 // Get account information
                 mFullName = PH.NULL;
                 mEmail = PH.NULL;
+                SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
                 try {
                     mFullName = acct.getDisplayName();
+                    editor.putString(PH.USER_NAME, mFullName);
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
                 try {
                     mEmail = acct.getEmail();
+                    editor.putString(PH.USER_EMAIL, mEmail);
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
+                editor.commit();
             }
         }
     }
 
+    private void signIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
 
+    //TODO: TEMP
+    public void printStuff() {
+        Log.d("SEVTEST ", "name: " + mFullName + " email: " + mEmail);
+    }
 
 
 

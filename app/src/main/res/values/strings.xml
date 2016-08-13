@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">firebase-lab</string>
+    <string name="common_signin_button_text_long">Sign in with Gmail Account</string>
 </resources>

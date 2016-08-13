@@ -21,7 +21,6 @@ public class Message implements Comparable<Message> {
 
     @Override
     public int compareTo(Message message) {
-//        Message message = (Message) o;
         return this.timeStamp.compareTo(message.getTimeStamp());
 
     }
