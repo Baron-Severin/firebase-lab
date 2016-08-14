@@ -35,6 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:hint="Enter your message here"
+                android:id="@+id/editText_messageBody_chatActivity"
                 />
 
             <Button
@@ -43,6 +44,7 @@
                 android:layout_weight="1"
                 android:text="SEND"
                 android:background="@drawable/rounded_button"
+                android:id="@+id/button_sendMessage_chatActivity"
                 />
 
         </LinearLayout>

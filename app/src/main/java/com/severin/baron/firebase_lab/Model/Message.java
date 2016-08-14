@@ -15,20 +15,24 @@ public class Message implements Comparable<Message> {
     final String body;
     final Date timeStamp;
     final String userId;  // userId == gmail address
+    final String displayName;
 
-    public Message(String body, String userId) {
+    public Message(String body, String userId, String displayName) {
         this.body = body;
         this.userId = userId;
         this.timeStamp = new Date();
+        this.displayName = displayName;
     }
 
     @JsonCreator
     public Message(@JsonProperty("body") String body,
                    @JsonProperty("timeStamp") Date timeStamp,
-                   @JsonProperty("userId") String userId) {
+                   @JsonProperty("userId") String userId,
+                   @JsonProperty("displayName") String displayName) {
         this.body = body;
         this.timeStamp = timeStamp;
         this.userId = userId;
+        this.displayName = displayName;
     }
 
     @Override

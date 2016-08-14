@@ -20,6 +20,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +54,8 @@ public class ChatActivity extends AppCompatActivity
     Context mContext;
     List<Message> currentChatMessages;
     MessageAdapter adapter;
+    EditText editText;
+    Button button;
 //    MessageList mCurrentRoomMessages;
 
     @Override
@@ -64,8 +68,16 @@ public class ChatActivity extends AppCompatActivity
             currentChatMessages = new ArrayList<>();
         }
 
+        editText = (EditText) findViewById(R.id.editText_messageBody_chatActivity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Button button = (Button) findViewById(R.id.button_sendMessage_chatActivity);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage();
+            }
+        });
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -219,14 +231,16 @@ public class ChatActivity extends AppCompatActivity
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-                Message message = new Message(PH.HAS_LEFT_ROOM, mLocalCurrentUser.getUserId());
+                Message message = new Message(PH.HAS_LEFT_ROOM, mLocalCurrentUser.getUserId(),
+                        mLocalCurrentUser.getDisplayName());
                 mOldRoom.child(PH.MESSAGE_LIST).push().setValue(message);
             }
         });
 //        getSupportActionBar().setTitle();  // TODO: set this to room name
         //TODO: add a "user joined" message.  this will return data as well
         mFbCurrentRoom.child(PH.MESSAGE_LIST).push().setValue(new Message
-                        (PH.HAS_JOINED_ROOM, new Date(), mLocalCurrentUser.getUserId()));
+                        (PH.HAS_JOINED_ROOM, new Date(), mLocalCurrentUser.getUserId(),
+                                mLocalCurrentUser.getDisplayName()));
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView_chat_chatActivity);
         adapter = new MessageAdapter(this, currentChatMessages);
@@ -235,6 +249,16 @@ public class ChatActivity extends AppCompatActivity
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+    }
+
+    private void sendMessage() {
+        if (!editText.getText().toString().equals("")) {
+            String body = editText.getText().toString();
+            Message message = new Message(body, mLocalCurrentUser.getDisplayName(),
+                    mLocalCurrentUser.getDisplayName());
+            mFbCurrentRoom.child(PH.MESSAGE_LIST).push().setValue(message);
+            editText.setText("");
+        }
     }
 
     @Override

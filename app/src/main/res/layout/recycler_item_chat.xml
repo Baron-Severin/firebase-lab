@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/recycler_item_userName"
             android:text="username"
+            android:layout_marginRight="5dp"
             />
 
         <TextView
