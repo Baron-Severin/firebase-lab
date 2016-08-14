@@ -11,9 +11,19 @@ public class User {
     String preferredTextColor;
     String displayName;
     final String userId;  // userId == gmail account
+    boolean changeFlag;
+
 
     public User(String userId) {
         this.userId = userId;
+    }
+
+    public User(String userId, List<Room> activeInRooms, String preferredTextColor, String displayName, boolean changeFlag) {
+        this.userId = userId;
+        this.activeInRooms = activeInRooms;
+        this.preferredTextColor = preferredTextColor;
+        this.displayName = displayName;
+        this.changeFlag = changeFlag;
     }
 
     public List<Room> getActiveInRooms() {

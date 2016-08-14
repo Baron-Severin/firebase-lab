@@ -14,7 +14,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.FirebaseException;
+import com.firebase.client.ValueEventListener;
+import com.severin.baron.firebase_lab.Model.User;
 
 public class ChatActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -22,11 +27,13 @@ public class ChatActivity extends AppCompatActivity
     Firebase mFirebaseRootRef;
     Firebase mFbCurrentUser;
     String mEmail, mFullName;
+    User mLocalCurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -61,8 +68,40 @@ public class ChatActivity extends AppCompatActivity
 
         mFirebaseRootRef = new Firebase(PH.FIREBASE_URL);
         mFbCurrentUser = mFirebaseRootRef.child(mFullName);
-        String h = mFbCurrentUser.toString();
+
+        mFbCurrentUser.child("displayName").setValue("testName");
+
+        if (mLocalCurrentUser == null) {
+            mLocalCurrentUser = new User(mEmail);
+        }
+
+        if (mLocalCurrentUser.getDisplayName() == null) {
+            mFbCurrentUser.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // If the user information already exists in the FB DB, this will pull
+                    // it down
+                    try {
+                        User pulledData = dataSnapshot.getValue(User.class);
+                        mLocalCurrentUser.setActiveInRooms(pulledData.getActiveInRooms());
+                        mLocalCurrentUser.setDisplayName(pulledData.getDisplayName());
+                        mLocalCurrentUser.setPreferredTextColor(pulledData.getPreferredTextColor());
+                        mFbCurrentUser.child("changeFlag").setValue(false);
+                    // If user information is not in the FB DB, it will be requested and pushed up
+                    } catch (FirebaseException e) {
+                        // TODO: request user information, add it to FB
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            });
+            mFbCurrentUser.child("changeFlag").setValue(true);
+        }
         System.out.println("");
+
     }
 
     @Override
