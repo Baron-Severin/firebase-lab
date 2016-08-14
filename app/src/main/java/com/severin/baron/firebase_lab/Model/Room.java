@@ -1,5 +1,8 @@
 package com.severin.baron.firebase_lab.Model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +16,9 @@ public class Room {
     List<User> roomUsers;
     List<Message> allMessages;
 
-    public Room(int roomId, String roomDisplayName) {
+    @JsonCreator
+    public Room(@JsonProperty("roomId") int roomId,
+                @JsonProperty("roomDisplayName") String roomDisplayName) {
         this.roomId = roomId;
         this.roomDisplayName = roomDisplayName;
         this.roomUsers = new ArrayList<>();

@@ -21,4 +21,7 @@ public class PH {
     // UserDetailFragment Constants
     public static final String NEW_USER = "NEW_USER";
 
+    // Model Constants
+    public static final String PLACEHOLDER_ROOM = "PLACEHOLDER_ROOM";
+
 }

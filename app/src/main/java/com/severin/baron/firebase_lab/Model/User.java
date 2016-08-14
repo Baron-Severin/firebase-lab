@@ -1,5 +1,8 @@
 package com.severin.baron.firebase_lab.Model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.severin.baron.firebase_lab.Utility.PH;
 
 import java.util.ArrayList;
@@ -10,19 +13,26 @@ import java.util.List;
  */
 public class User {
 
-    List<Room> activeInRooms;  // these contain room id/display only
-    String preferredTextColor;
-    String displayName;
-    final String userId;  // userId == gmail account
-    boolean changeFlag;
+    private List<Room> activeInRooms;  // these contain room id/display only
+    private String preferredTextColor;
+    private String displayName;
+    private final String userId;  // userId == gmail account
+    private boolean changeFlag;
 
     public User(String userId) {
         this.userId = userId;
         this.activeInRooms = new ArrayList<>();
+        Room placeholder = new Room(0, PH.PLACEHOLDER_ROOM);
+//        activeInRooms.add(placeholder);
         this.preferredTextColor = PH.TEXT_BLACK;
     }
 
-    public User(String userId, List<Room> activeInRooms, String preferredTextColor, String displayName, boolean changeFlag) {
+    @JsonCreator
+    public User(@JsonProperty("userId") String userId,
+//                @JsonProperty("activeInRooms") List<Room> activeInRooms,
+                @JsonProperty("preferredTextColor") String preferredTextColor,
+                @JsonProperty("displayName") String displayName,
+                @JsonProperty("changeFlag") boolean changeFlag) {
         this.userId = userId;
         this.activeInRooms = activeInRooms;
         this.preferredTextColor = preferredTextColor;
@@ -56,5 +66,15 @@ public class User {
 
     public String getUserId() {
         return userId;
+    }
+
+    public boolean isChangeFlag() {
+        return changeFlag;
+    }
+
+    public void clearActiveRooms() {
+        activeInRooms.clear();
+        Room placeholder = new Room(0, PH.PLACEHOLDER_ROOM);
+        activeInRooms.add(placeholder);
     }
 }

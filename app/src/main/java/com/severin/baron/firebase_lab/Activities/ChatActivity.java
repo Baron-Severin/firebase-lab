@@ -30,6 +30,8 @@ import com.severin.baron.firebase_lab.Model.User;
 import com.severin.baron.firebase_lab.Utility.PH;
 import com.severin.baron.firebase_lab.R;
 
+import org.json.JSONObject;
+
 public class ChatActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         UserDetailFragment.OnUserDetailFragmentClosedListener {
@@ -97,25 +99,26 @@ public class ChatActivity extends AppCompatActivity
         mFbCurrentUser.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // If the user information already exists in the FB DB, this will pull
-                // it down
-                try {
-                    User pulledData = dataSnapshot.getValue(User.class);
+
+                User pulledData = dataSnapshot.getValue(User.class);
+                if (pulledData.getDisplayName() != null &&
+                        !pulledData.getDisplayName().equals("")) {
                     mLocalCurrentUser.setActiveInRooms(pulledData.getActiveInRooms());
                     mLocalCurrentUser.setDisplayName(pulledData.getDisplayName());
                     mLocalCurrentUser.setPreferredTextColor(pulledData.getPreferredTextColor());
                     mFbCurrentUser.child("changeFlag").setValue(false);
+                } else {
                     // If user information is not in the FB DB, it is instead requested and pushed up
-                } catch (FirebaseException e) {
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
                     UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(true);
                     userDetailFragment.passContext(mContext);
                     transaction.replace(R.id.frameLayout_overall_chatActivity, userDetailFragment);
                     transaction.commit();
-                    LinearLayout synchronizing = (LinearLayout) findViewById(R.id.layout_synchronizingWithDb_chatContent);
-                    synchronizing.setVisibility(View.GONE);
                 }
+                LinearLayout synchronizing = (LinearLayout)
+                        findViewById(R.id.layout_synchronizingWithDb_chatContent);
+                synchronizing.setVisibility(View.GONE);
             }
 
             @Override
@@ -135,7 +138,12 @@ public class ChatActivity extends AppCompatActivity
         transaction.commit();
 
         mLocalCurrentUser.setDisplayName(displayName);
-        
+        pushCurrentUserDetailsToFb();
+    }
+
+    private void pushCurrentUserDetailsToFb() {
+        mFbCurrentUser.setValue(mLocalCurrentUser);
+
     }
 
     @Override
