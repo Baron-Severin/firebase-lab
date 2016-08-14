@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:id="@+id/progressBar_mainActivity"
+        android:background="@drawable/round_progress_bar"
         android:layout_gravity="center" />
 
 

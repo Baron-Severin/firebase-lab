@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -107,7 +108,8 @@ public class ChatActivity extends AppCompatActivity
                     UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(true);
                     fragmentTransaction.replace(R.id.frameLayout_overall_chatActivity, userDetailFragment);
                     fragmentTransaction.commit();
-                    Log.d("SEVTEST", "FragTrans was committed");
+                    LinearLayout synchronizing = (LinearLayout) findViewById(R.id.layout_synchronizingWithDb_chatContent);
+                    synchronizing.setVisibility(View.GONE);
                 }
             }
 
