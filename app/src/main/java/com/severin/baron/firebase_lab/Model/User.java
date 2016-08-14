@@ -1,5 +1,8 @@
 package com.severin.baron.firebase_lab.Model;
 
+import com.severin.baron.firebase_lab.Utility.PH;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,9 +16,10 @@ public class User {
     final String userId;  // userId == gmail account
     boolean changeFlag;
 
-
     public User(String userId) {
         this.userId = userId;
+        this.activeInRooms = new ArrayList<>();
+        this.preferredTextColor = PH.TEXT_BLACK;
     }
 
     public User(String userId, List<Room> activeInRooms, String preferredTextColor, String displayName, boolean changeFlag) {

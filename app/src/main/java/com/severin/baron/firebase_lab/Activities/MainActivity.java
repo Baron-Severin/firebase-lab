@@ -1,4 +1,4 @@
-package com.severin.baron.firebase_lab;
+package com.severin.baron.firebase_lab.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.severin.baron.firebase_lab.Utility.PH;
+import com.severin.baron.firebase_lab.R;
 
 public class MainActivity extends AppCompatActivity {
 

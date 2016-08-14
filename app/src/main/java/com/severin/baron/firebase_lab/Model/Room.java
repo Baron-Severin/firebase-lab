@@ -1,5 +1,6 @@
 package com.severin.baron.firebase_lab.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,6 +16,8 @@ public class Room {
     public Room(int roomId, String roomDisplayName) {
         this.roomId = roomId;
         this.roomDisplayName = roomDisplayName;
+        this.roomUsers = new ArrayList<>();
+        this.allMessages = new ArrayList<>();
     }
 
     public int getRoomId() {

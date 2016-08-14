@@ -1,9 +1,12 @@
-package com.severin.baron.firebase_lab;
+package com.severin.baron.firebase_lab.Activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,10 +22,14 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.FirebaseException;
 import com.firebase.client.ValueEventListener;
+import com.severin.baron.firebase_lab.Fragments.UserDetailFragment;
 import com.severin.baron.firebase_lab.Model.User;
+import com.severin.baron.firebase_lab.Utility.PH;
+import com.severin.baron.firebase_lab.R;
 
 public class ChatActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        UserDetailFragment.OnUserDetailFragmentClosedListener {
 
     Firebase mFirebaseRootRef;
     Firebase mFbCurrentUser;
@@ -67,41 +74,55 @@ public class ChatActivity extends AppCompatActivity
         mEmail = sharedPreferences.getString(PH.USER_EMAIL, null);
 
         mFirebaseRootRef = new Firebase(PH.FIREBASE_URL);
-        mFbCurrentUser = mFirebaseRootRef.child(mFullName);
-
-        mFbCurrentUser.child("displayName").setValue("testName");
+        mFbCurrentUser = mFirebaseRootRef.child(PH.FB_USERS).child(mFullName);
 
         if (mLocalCurrentUser == null) {
             mLocalCurrentUser = new User(mEmail);
         }
 
         if (mLocalCurrentUser.getDisplayName() == null) {
-            mFbCurrentUser.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // If the user information already exists in the FB DB, this will pull
-                    // it down
-                    try {
-                        User pulledData = dataSnapshot.getValue(User.class);
-                        mLocalCurrentUser.setActiveInRooms(pulledData.getActiveInRooms());
-                        mLocalCurrentUser.setDisplayName(pulledData.getDisplayName());
-                        mLocalCurrentUser.setPreferredTextColor(pulledData.getPreferredTextColor());
-                        mFbCurrentUser.child("changeFlag").setValue(false);
-                    // If user information is not in the FB DB, it will be requested and pushed up
-                    } catch (FirebaseException e) {
-                        // TODO: request user information, add it to FB
-                    }
-                }
-
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-
-                }
-            });
-            mFbCurrentUser.child("changeFlag").setValue(true);
+            synchronizeUserWithFb();    // Retrieves data if possible, otherwise requests information
+                                        // and pushes it to FB
         }
-        System.out.println("");
 
+    }
+
+    private void synchronizeUserWithFb() {
+        mFbCurrentUser.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // If the user information already exists in the FB DB, this will pull
+                // it down
+                try {
+                    User pulledData = dataSnapshot.getValue(User.class);
+                    mLocalCurrentUser.setActiveInRooms(pulledData.getActiveInRooms());
+                    mLocalCurrentUser.setDisplayName(pulledData.getDisplayName());
+                    mLocalCurrentUser.setPreferredTextColor(pulledData.getPreferredTextColor());
+                    mFbCurrentUser.child("changeFlag").setValue(false);
+                    // If user information is not in the FB DB, it is instead requested and pushed up
+                } catch (FirebaseException e) {
+                    // TODO: request user information, add it to FB
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(true);
+                    fragmentTransaction.replace(R.id.frameLayout_overall_chatActivity, userDetailFragment);
+                    fragmentTransaction.commit();
+                    Log.d("SEVTEST", "FragTrans was committed");
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                firebaseError.toException().printStackTrace();
+            }
+        });
+        mFbCurrentUser.child("changeFlag").setValue(false);
+        mFbCurrentUser.child("changeFlag").setValue(true);
+    }
+
+    @Override
+    public void onUserDetailSaved(String displayName) {
+        // TODO: update displayname
     }
 
     @Override

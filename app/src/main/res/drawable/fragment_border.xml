@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid/>
+    <corners
+        android:radius="10dp" />
+    <stroke
+        android:width="5dp"
+        android:color="@color/colorPrimary"
+        />
+    <padding
+        android:left="10dp"
+        android:top="@dimen/fragmentPaddingVertical"
+        android:right="10dp"
+        android:bottom="@dimen/fragmentPaddingVertical" />
+</shape>
+
+
+
+
+<!--<solid android:color="#66FFFFFF"/>-->

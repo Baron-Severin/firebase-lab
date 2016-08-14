@@ -1,4 +1,4 @@
-package com.severin.baron.firebase_lab;
+package com.severin.baron.firebase_lab.Utility;
 
 import android.app.Application;
 
