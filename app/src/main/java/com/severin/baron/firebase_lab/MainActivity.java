@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -28,11 +30,14 @@ public class MainActivity extends AppCompatActivity {
 
     String mFullName, mEmail;
     public static final int RC_SIGN_IN = 1000;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar_mainActivity);
 
         // Configure sign-in to request the user's ID, email address, and basic profile. ID and
 // basic profile are included in DEFAULT_SIGN_IN.
@@ -55,15 +60,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 signIn();
-            }
-        });
-
-        // TODO: TEMP
-        Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                printStuff();
             }
         });
 
@@ -105,18 +101,36 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 editor.commit();
+
+                beginChatActivity();
             }
         }
     }
 
     private void signIn() {
+        progressBar.setVisibility(View.VISIBLE);
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    //TODO: TEMP
-    public void printStuff() {
-        Log.d("SEVTEST ", "name: " + mFullName + " email: " + mEmail);
+    private void beginChatActivity() {
+        progressBar.setVisibility(View.GONE);
+        if (verifyUserInfoIsSaved()) {
+            Intent intent = new Intent(this, ChatActivity.class);
+            startActivity(intent);
+        } else {
+            Toast toast = new Toast(this);
+            toast.makeText(this, "No login information found, please check your internet connection " +
+                    "and try again", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean verifyUserInfoIsSaved() {
+        if (mEmail != null && mFullName != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 

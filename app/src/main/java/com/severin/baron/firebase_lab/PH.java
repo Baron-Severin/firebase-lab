@@ -5,7 +5,7 @@ package com.severin.baron.firebase_lab;
  */
 public class PH {
 
-    public static final String NULL = "NULL";
+    public static final String NULL = null;
     public static final String USER_NAME = "USER_NAME";
     public static final String USER_EMAIL = "USER_EMAIL";
 
