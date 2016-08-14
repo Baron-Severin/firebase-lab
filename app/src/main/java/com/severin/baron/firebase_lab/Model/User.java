@@ -1,7 +1,6 @@
 package com.severin.baron.firebase_lab.Model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.severin.baron.firebase_lab.Utility.PH;
 
@@ -22,14 +21,14 @@ public class User {
     public User(String userId) {
         this.userId = userId;
         this.activeInRooms = new ArrayList<>();
-        Room placeholder = new Room(0, PH.PLACEHOLDER_ROOM);
-//        activeInRooms.add(placeholder);
+        Room placeholder = new Room(PH.DEFAULT_ROOM_ID, PH.DEFAULT_ROOM);
+        activeInRooms.add(placeholder);
         this.preferredTextColor = PH.TEXT_BLACK;
     }
 
     @JsonCreator
     public User(@JsonProperty("userId") String userId,
-//                @JsonProperty("activeInRooms") List<Room> activeInRooms,
+                @JsonProperty("activeInRooms") List<Room> activeInRooms,
                 @JsonProperty("preferredTextColor") String preferredTextColor,
                 @JsonProperty("displayName") String displayName,
                 @JsonProperty("changeFlag") boolean changeFlag) {
@@ -74,7 +73,7 @@ public class User {
 
     public void clearActiveRooms() {
         activeInRooms.clear();
-        Room placeholder = new Room(0, PH.PLACEHOLDER_ROOM);
+        Room placeholder = new Room(0, PH.DEFAULT_ROOM);
         activeInRooms.add(placeholder);
     }
 }

@@ -9,23 +9,40 @@ import java.util.List;
 /**
  * Created by erikrudie on 8/13/16.
  */
-public class Room {
+public class Room implements Comparable<Room> {
 
-    final int roomId;
+    final long roomId;
     String roomDisplayName;
     List<User> roomUsers;
-    List<Message> allMessages;
+//    MessageList messageList;
+
+//    @JsonCreator
+//    public Room(@JsonProperty("roomId") long roomId,
+//                @JsonProperty("roomDisplayName") String roomDisplayName,
+//                @JsonProperty("messageList") MessageList allMessages) {
 
     @JsonCreator
-    public Room(@JsonProperty("roomId") int roomId,
+    public Room(@JsonProperty("roomId") long roomId,
                 @JsonProperty("roomDisplayName") String roomDisplayName) {
         this.roomId = roomId;
         this.roomDisplayName = roomDisplayName;
         this.roomUsers = new ArrayList<>();
-        this.allMessages = new ArrayList<>();
+//        this.messageList = allMessages;
     }
 
-    public int getRoomId() {
+//    public Room(long roomId, String roomDisplayName) {
+//        this.roomId = System.currentTimeMillis();
+//        this.roomDisplayName = roomDisplayName;
+//        this.roomUsers = new ArrayList<>();
+////        this.messageList = new MessageList();
+//    }
+
+    @Override
+    public int compareTo(Room room) {
+        return (int) (this.roomId - room.getRoomId());
+    }
+
+    public long getRoomId() {
         return roomId;
     }
 
@@ -45,11 +62,11 @@ public class Room {
         this.roomUsers = roomUsers;
     }
 
-    public List<Message> getAllMessages() {
-        return allMessages;
-    }
-
-    public void setAllMessages(List<Message> allMessages) {
-        this.allMessages = allMessages;
-    }
+//    public MessageList getAllMessages() {
+//        return messageList;
+//    }
+//
+//    public void setAllMessages(MessageList allMessages) {
+//        this.messageList = allMessages;
+//    }
 }
