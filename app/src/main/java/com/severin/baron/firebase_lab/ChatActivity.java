@@ -1,5 +1,6 @@
 package com.severin.baron.firebase_lab;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,8 +14,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.firebase.client.Firebase;
+
 public class ChatActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    Firebase mFirebaseRootRef;
+    Firebase mFbCurrentUser;
+    String mEmail, mFullName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +47,22 @@ public class ChatActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = getSharedPreferences(PH.GET_SHARED_PREFERENCES,
+                MODE_PRIVATE);
+        mFullName = sharedPreferences.getString(PH.USER_NAME, null);
+        mEmail = sharedPreferences.getString(PH.USER_EMAIL, null);
+
+        mFirebaseRootRef = new Firebase(PH.FIREBASE_URL);
+        mFbCurrentUser = mFirebaseRootRef.child(mFullName);
+        String h = mFbCurrentUser.toString();
+        System.out.println("");
     }
 
     @Override

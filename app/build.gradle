@@ -4,6 +4,12 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.1"
 
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
+    }
+
     defaultConfig {
         applicationId "com.severin.baron.firebase_lab"
         minSdkVersion 21
@@ -29,7 +35,12 @@ dependencies {
     // Google login
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.google.android.gms:play-services-auth:9.4.0'
-    compile 'com.android.support:design:24.1.1'}
+    compile 'com.android.support:design:24.1.1'
+
+    // Firebase
+    compile 'com.firebase:firebase-client-android:2.3.1'
+
+}
 
 // Firebase & Google login
 apply plugin: 'com.google.gms.google-services'
