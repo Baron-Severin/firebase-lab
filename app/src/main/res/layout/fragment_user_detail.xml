@@ -41,6 +41,7 @@
         android:layout_weight="2"
         android:background="@drawable/rounded_button"
         android:text="Save Information"
+        android:id="@+id/button_saveInformation_userDetailFragment"
         />
 
 </LinearLayout>

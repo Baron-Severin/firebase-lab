@@ -9,8 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.severin.baron.firebase_lab.Activities.ChatActivity;
 import com.severin.baron.firebase_lab.R;
 import com.severin.baron.firebase_lab.Utility.PH;
 
@@ -25,6 +29,8 @@ import com.severin.baron.firebase_lab.Utility.PH;
 public class UserDetailFragment extends DialogFragment {
 
     private static boolean isNewUser;
+    EditText editText;
+    Context parentContext;
 
     private OnUserDetailFragmentClosedListener mListener;
 
@@ -40,6 +46,10 @@ public class UserDetailFragment extends DialogFragment {
         return fragment;
     }
 
+    public void passContext(Context context){
+        parentContext = context;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,16 +61,26 @@ public class UserDetailFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View userDetailFragment = inflater.inflate(R.layout.fragment_user_detail, container, false);
+        View view = inflater.inflate(R.layout.fragment_user_detail, container, false);
 
-        TextView newUserText = (TextView) userDetailFragment.findViewById(R.id.textView_newUser_userDetailFragment);
+        TextView newUserText = (TextView) view.findViewById(R.id.textView_newUser_userDetailFragment);
         if (isNewUser) {
             newUserText.setVisibility(View.VISIBLE);
         } else {
             newUserText.setVisibility(View.GONE);
         }
 
-        return userDetailFragment;
+        editText = (EditText) view.findViewById(R.id.editText_chooseUsername_userDetailFragment);
+
+        Button button = (Button) view.findViewById(R.id.button_saveInformation_userDetailFragment);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveUserInformation();
+            }
+        });
+
+        return view;
     }
 
     @Override
@@ -80,6 +100,19 @@ public class UserDetailFragment extends DialogFragment {
         mListener = null;
     }
 
+    private void saveUserInformation(){
+        if (!editText.getText().toString().equals("")) {
+            OnUserDetailFragmentClosedListener callback =
+                    (OnUserDetailFragmentClosedListener) parentContext;
+            callback.onUserDetailSaved(editText.getText().toString(), this);
+        } else {
+            new Toast(parentContext).makeText(parentContext,
+                    "Please fill in all fields before continuing", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -91,6 +124,6 @@ public class UserDetailFragment extends DialogFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnUserDetailFragmentClosedListener {
-        void onUserDetailSaved(String displayName);
+        void onUserDetailSaved(String displayName, Fragment fragment);
     }
 }

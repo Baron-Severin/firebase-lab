@@ -1,9 +1,11 @@
 package com.severin.baron.firebase_lab.Activities;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -36,11 +38,14 @@ public class ChatActivity extends AppCompatActivity
     Firebase mFbCurrentUser;
     String mEmail, mFullName;
     User mLocalCurrentUser;
+    Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        mContext = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -102,12 +107,12 @@ public class ChatActivity extends AppCompatActivity
                     mFbCurrentUser.child("changeFlag").setValue(false);
                     // If user information is not in the FB DB, it is instead requested and pushed up
                 } catch (FirebaseException e) {
-                    // TODO: request user information, add it to FB
                     FragmentManager fragmentManager = getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
                     UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(true);
-                    fragmentTransaction.replace(R.id.frameLayout_overall_chatActivity, userDetailFragment);
-                    fragmentTransaction.commit();
+                    userDetailFragment.passContext(mContext);
+                    transaction.replace(R.id.frameLayout_overall_chatActivity, userDetailFragment);
+                    transaction.commit();
                     LinearLayout synchronizing = (LinearLayout) findViewById(R.id.layout_synchronizingWithDb_chatContent);
                     synchronizing.setVisibility(View.GONE);
                 }
@@ -123,8 +128,14 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onUserDetailSaved(String displayName) {
-        // TODO: update displayname
+    public void onUserDetailSaved(String displayName, Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.remove(fragment);
+        transaction.commit();
+
+        mLocalCurrentUser.setDisplayName(displayName);
+        
     }
 
     @Override
