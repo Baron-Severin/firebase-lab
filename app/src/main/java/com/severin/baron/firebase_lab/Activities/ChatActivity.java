@@ -157,12 +157,7 @@ public class ChatActivity extends AppCompatActivity
                     mFbCurrentUser.child("changeFlag").setValue(false);
                 } else {
                     // If user information is not in the FB DB, it is instead requested and pushed up
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-                    UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(true);
-                    userDetailFragment.passContext(mContext);
-                    transaction.replace(R.id.linearLayout_overall_chatActivity, userDetailFragment);
-                    transaction.commit();
+                    openSetUserDetails(true);
                 }
                 LinearLayout synchronizing = (LinearLayout)
                         findViewById(R.id.layout_synchronizingWithDb_chatContent);
@@ -187,6 +182,20 @@ public class ChatActivity extends AppCompatActivity
 
         mLocalCurrentUser.setDisplayName(displayName);
         pushCurrentUserDetailsToFb();
+    }
+
+    private void openSetUserDetails(boolean bool) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        // In newInstance(bool), bool is true if no existing username has been found
+        String displayName = mLocalCurrentUser.getDisplayName();
+        if (displayName == null) {
+            displayName = "";
+        }
+        UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(bool, displayName);
+        userDetailFragment.passContext(mContext);
+        transaction.replace(R.id.linearLayout_overall_chatActivity, userDetailFragment);
+        transaction.commit();
     }
 
     private void pushCurrentUserDetailsToFb() {
@@ -248,7 +257,6 @@ public class ChatActivity extends AppCompatActivity
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
-
     }
 
     private void sendMessage() {
@@ -286,7 +294,8 @@ public class ChatActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.optionsButton_changeDisplayName_toolbar) {
+            openSetUserDetails(false);
             return true;
         }
 

@@ -31,6 +31,7 @@ public class UserDetailFragment extends DialogFragment {
     private static boolean isNewUser;
     EditText editText;
     Context parentContext;
+    String oldDisplayName;
 
     private OnUserDetailFragmentClosedListener mListener;
 
@@ -38,10 +39,11 @@ public class UserDetailFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-    public static UserDetailFragment newInstance(boolean isNewUser) {
+    public static UserDetailFragment newInstance(boolean isNewUser, String oldDisplayName) {
         UserDetailFragment fragment = new UserDetailFragment();
         Bundle args = new Bundle();
         args.putBoolean(PH.NEW_USER, isNewUser);
+        args.putString(PH.USER_NAME, oldDisplayName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,6 +57,7 @@ public class UserDetailFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             isNewUser = getArguments().getBoolean(PH.NEW_USER);
+            oldDisplayName = getArguments().getString(PH.USER_NAME);
         }
     }
 
@@ -62,6 +65,8 @@ public class UserDetailFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_detail, container, false);
+        editText = (EditText) view.findViewById(R.id.editText_chooseUsername_userDetailFragment);
+        editText.setText(oldDisplayName);
 
         TextView newUserText = (TextView) view.findViewById(R.id.textView_newUser_userDetailFragment);
         if (isNewUser) {
@@ -69,8 +74,6 @@ public class UserDetailFragment extends DialogFragment {
         } else {
             newUserText.setVisibility(View.GONE);
         }
-
-        editText = (EditText) view.findViewById(R.id.editText_chooseUsername_userDetailFragment);
 
         Button button = (Button) view.findViewById(R.id.button_saveInformation_userDetailFragment);
         button.setOnClickListener(new View.OnClickListener() {
