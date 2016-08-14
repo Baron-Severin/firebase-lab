@@ -8,6 +8,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -28,10 +31,12 @@ import com.severin.baron.firebase_lab.Fragments.UserDetailFragment;
 import com.severin.baron.firebase_lab.Model.Message;
 //import com.severin.baron.firebase_lab.Model.MessageList;
 import com.severin.baron.firebase_lab.Model.User;
+import com.severin.baron.firebase_lab.Utility.MessageAdapter;
 import com.severin.baron.firebase_lab.Utility.PH;
 import com.severin.baron.firebase_lab.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,6 +50,8 @@ public class ChatActivity extends AppCompatActivity
     String mEmail, mFullName;
     User mLocalCurrentUser;
     Context mContext;
+    List<Message> currentChatMessages;
+    MessageAdapter adapter;
 //    MessageList mCurrentRoomMessages;
 
     @Override
@@ -53,6 +60,9 @@ public class ChatActivity extends AppCompatActivity
         setContentView(R.layout.activity_chat);
 
         mContext = this;
+        if (currentChatMessages == null) {
+            currentChatMessages = new ArrayList<>();
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -139,7 +149,7 @@ public class ChatActivity extends AppCompatActivity
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
                     UserDetailFragment userDetailFragment = UserDetailFragment.newInstance(true);
                     userDetailFragment.passContext(mContext);
-                    transaction.replace(R.id.frameLayout_overall_chatActivity, userDetailFragment);
+                    transaction.replace(R.id.linearLayout_overall_chatActivity, userDetailFragment);
                     transaction.commit();
                 }
                 LinearLayout synchronizing = (LinearLayout)
@@ -185,7 +195,8 @@ public class ChatActivity extends AppCompatActivity
                 // Pull out the actual list of messages
                 LinkedHashMap<String, Message> secondStep = obby.get(PH.MESSAGE_LIST);
                 Set<String> keySet = secondStep.keySet();
-                List<Message> allMessages = new ArrayList<Message>();
+                Log.d("SEVTEST ", "Clearing chat messages");
+                currentChatMessages.clear();
 
                 // Loop over keyset
                 for (String key : keySet) {
@@ -199,9 +210,11 @@ public class ChatActivity extends AppCompatActivity
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    allMessages.add(message);
+                    currentChatMessages.add(message);
                 }
+                Collections.sort(currentChatMessages);
                 //TODO:    updateChatText(dataSnapshot);
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -214,6 +227,12 @@ public class ChatActivity extends AppCompatActivity
         //TODO: add a "user joined" message.  this will return data as well
         mFbCurrentRoom.child(PH.MESSAGE_LIST).push().setValue(new Message
                         (PH.HAS_JOINED_ROOM, new Date(), mLocalCurrentUser.getUserId()));
+
+            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView_chat_chatActivity);
+            adapter = new MessageAdapter(this, currentChatMessages);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
     }
 
     @Override

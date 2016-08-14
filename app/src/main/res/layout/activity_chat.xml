@@ -13,8 +13,13 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/frameLayout_overall_chatActivity"
+        android:id="@+id/linearLayout_overall_chatActivity"
         android:gravity="center">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView_chat_chatActivity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
